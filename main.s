@@ -30,6 +30,7 @@ END_RTI:
 
 _start:
     movia r6, 0x10001000 /* JTAG UART base address */
+RETYPE_MESSAGE:
     movia r8, TEXT_STRING
     
     LOOP:
@@ -45,6 +46,8 @@ _start:
         beq r8, r0, GET_JTAG /* if no data, wait */
         andi r5, r4, 0x00ff /* the data is in the least significant byte */
         call PUT_JTAG /* echo character */
+        movi r10, 0b00001010
+        beq r5, r10, RETYPE_MESSAGE
         br GET_JTAG
     
 
