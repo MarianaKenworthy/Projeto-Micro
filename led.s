@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 .global LED
 
 ## endereço dos led e tal
@@ -54,19 +53,3 @@ APAGA:
     br DONE
 DONE:
     ret 
-=======
-.global LED
-
-## endereço dos led e tal
-
-LED:
-    ##beq command[1], 0, ACENDE
-    ##beq command[1], 1, APAGA
-
-ACENDE:
-
-APAGA:
-     
-DONE:
-    ret 
->>>>>>> 94f703269a6d4175748a7d366d737440b2a02f54
