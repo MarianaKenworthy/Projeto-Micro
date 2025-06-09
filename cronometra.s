@@ -1,0 +1,6 @@
+.global CRONOMETRA
+
+CRONOMETRA:
+
+DONE:
+ret
