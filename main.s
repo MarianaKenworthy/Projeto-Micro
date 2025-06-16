@@ -14,9 +14,6 @@ RTI:
     stw r14, 32(sp)
     stw r15, 36(sp)
 
-    movia r10, TIMER
-    movi r11, 0x1
-    stw r11, 0(r10)
 
     rdctl et, ipending
     beq et, r0, END_RTI
@@ -27,27 +24,57 @@ RTI:
     andi r21, et, 0x1
     beq r21, r0, CHECK_KEY1
 
+    # reset bit TO do timer
+    movia r10, TIMER
+    movi r11, 0x1
+    stwio r11, 0(r10)
+
     # Verifica se FLAG_ANIMACAO está ativa
     movia r16, FLAG_ANIMACAO
     ldw r17, 0(r16)
     beq r17, r0, SKIP_ANIM
     call ANIMA
+
 SKIP_ANIM:
+
+    movi r17, 5
+    addi r22, r22, 1
+    blt r22, r17, END_RTI
+    
+
+    movi r22, 0
 
     # Verifica se FLAG_CRONOMETRO está ativa e não pausado
     movia r16, FLAG_CRONOMETRO
     ldw r17, 0(r16)
-    beq r17, r0, CHECK_KEY1
+    beq r17, r0, END_RTI
     movia r16, CRONO_PAUSA
     ldw r17, 0(r16)
-    bne r17, r0, CHECK_KEY1
+    bne r17, r0, END_RTI
     call CRONOMETRA     # atualiza contagem a cada 1s
 
 CHECK_KEY1:
-    # --- IRQ 1: Botão KEY1 ---
+
     andi r21, et, 0x2
     beq r21, r0, END_RTI
-    call CRONOMETRA
+    # --- IRQ 1: Botão KEY1 ---
+
+    # limpa a interrupção do botão
+    movia r21, 0x1000005C
+    stwio r0, (r21)
+
+    movia r16, CRONO_PAUSA
+    ldw r17, 0(r16)
+    bne r17, r0, DESPAUSA
+
+    movi r17, 1
+    stw r17, 0(r16)   
+    br END_RTI
+
+DESPAUSA:
+    stw r0, 0(r16)
+
+    
 
 END_RTI:
     ldw ra, 0(sp)
@@ -76,6 +103,9 @@ END_RTI:
 .global TIMER
 .equ TIMER, 0x10002000
 
+.global DISPLAY
+.equ DISPLAY, 0x10000020
+
 
 ## r4 -> controlador uart
 ## r5 -> mensagem em text_string
@@ -85,6 +115,8 @@ END_RTI:
 
 _start:
     movia r6, 0x10001000 /* JTAG UART base address */
+    
+    movia r22, 0
 
     # Inicializar o stack-pointer
     movia sp, 0x100000
@@ -107,6 +139,11 @@ _start:
     wrctl ienable, r14
     movi r15, 0x1       # Global enable
     wrctl status, r15
+
+    ## interrupt mask (KEY1)
+    movia r8, 0x10000050
+    movi  r9, 0x2
+    stwio r9, 8(r8) 
     
 LOOP_INFINITO:
     movia r8, TEXT_STRING
@@ -171,6 +208,7 @@ CHECA_ANIMACAO:
 
     /* Checa CRONOMETRO */
 CHECA_CRONOMETRO:
+
     movi r8, 0x32
     bne r5, r8, LOOP_INFINITO
     call CRONOMETRO_HANDLER
@@ -183,6 +221,9 @@ COMMAND:
 
 
 .org 0x500
+.global NUMBERS
+NUMBERS:
+.word 0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F
 
 .align
 .global FLAG_ANIMACAO
@@ -201,16 +242,11 @@ CRONO_PAUSA:
 LED_ANIM:
 .word 1
 
-.global ANIM_DIR
-ANIM_DIR:
-.word 0
-
 .global DIR_FLAG
 DIR_FLAG:
 .word 0
 
 TEXT_STRING:
 .asciz "\nEntre com o comando:\n"
-
 
 .end

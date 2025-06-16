@@ -13,13 +13,20 @@ ANIMA:
     stw r14, 32(sp)
     stw r15, 36(sp)
 
-    movia r16, ANIM_DIR
-    ldw r17, 0(r16)
+    ## movia r16, ANIM_DIR
+    ## ldw r17, 0(r16)
 
     movia r18, LED_ANIM
     ldw r19, 0(r18)
 
-    beq r17, r0, DIR_ESQ
+    movia r10, 0x10000040     # SW base
+    ldw r9, 0(r10)
+    andi r9, r9, 0x1         # SW0 apenas
+
+    movia r10, DIR_FLAG
+    stw r9, 0(r10)           # Guarda direção
+
+    beq r9, r0, DIR_ESQ
     br ESQ_DIR
 
 DIR_ESQ:

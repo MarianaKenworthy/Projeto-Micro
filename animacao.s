@@ -32,12 +32,12 @@ ANIMACAO_HANDLER:
     ## beq command[1], 0, PARA_ANIMACAO
 
 INICIA_ANIMACAO:
-    movia r10, 0x10000040     # SW base
-    ldw r9, 0(r10)
-    andi r9, r9, 0x1         # SW0 apenas
-
-    movia r10, DIR_FLAG
-    stw r9, 0(r10)           # Guarda direção
+    ##movia r10, 0x10000040     # SW base
+    ##ldw r9, 0(r10)
+    ##andi r9, r9, 0x1         # SW0 apenas
+##
+    ##movia r10, DIR_FLAG
+    ##stw r9, 0(r10)           # Guarda direção
 
     movi r11, 1
     movia r12, FLAG_ANIMACAO
@@ -49,6 +49,8 @@ PARA_ANIMACAO:
     movia r10, FLAG_ANIMACAO
     movi r9, 0
     stw r9, 0(r10)            # Desativa animação
+    movia r20, LEDR
+    stwio r0, 0(r20)
 
 
 
