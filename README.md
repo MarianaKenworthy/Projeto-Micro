@@ -52,3 +52,55 @@ O sistema utiliza interrupções para as seguintes finalidades:
 
 * **IRQ 0 (Timer)**: Usada para controlar a frequência de atualização da animação dos LEDs e a contagem do cronômetro.
 * **IRQ 1 (Botão KEY1)**: Utilizada para pausar e despausar o cronômetro.
+
+## Mapa de Registradores
+### main:
+r4 --> controlador uart
+r5 --> mensagem text string (mensagem ascii)
+r6 --> UART BASE address
+r7 --> COMMAND
+r8 --> text_string (esse é o texto passado na uart)
+r9 --> auxiliar de comparação
+
+### led
+r5 --> caractére
+r7 --> COMMAND
+r8 --> valor pra comparar (ou 0 ou 1 em char)
+r10 --> o valor do inteiro usado no led
+r11 --> auxiliar 
+r12 --> LEDR (endereço)
+r13 --> bit auxiliar que vai ser shiftado
+r14 --> contador
+r15 --> quais leds tao ligados
+
+### anima
+r16 --> endereço da direção
+r17 --> direção
+r18 --> endereço led atual da animação
+r19 --> led atual da animação
+r20 --> endereço ledr
+
+### animacao
+r5 --> valor do caractere de comando
+r8 --> auxiliar de comparação
+r10 --> endereço flag_animação
+r9 --> valor a ser passado para flag_animação
+r11 --> valor a ser passado pra flag_animação
+r12 --> endereço flag_animação
+r20 --> endereço LEDR
+
+### cronometra
+r5 --> endereço do DISPLAY
+r7 --> valor 9 (maior unidade possível)
+r11-14 --> separa os valores de r23 em unidade, dezena, centena e milhar
+r23 --> valor total em segundos (num vetor)
+
+### cronometro
+r5 --> valor do caractere de comando
+r8 --> auxiliar de comparação
+r9 --> valor a ser passado para flag_cronometro
+r10 --> endereço de flag_cronometro
+r11 --> valor a ser passado para flag_cronometro
+r12 --> endereço da flag_cronometro
+r20 --> endereço do DISPLAY
+r23 --> valor total em segundos (num vetor)
