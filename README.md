@@ -104,3 +104,6 @@ O sistema utiliza interrupções para as seguintes finalidades:
 * r12 --> endereço da flag_cronometro
 * r20 --> endereço do DISPLAY
 * r23 --> valor total em segundos (num vetor)
+
+## Contribuidores
+Este projeto foi feito por André Castilho, Mariana Kenworthy e Odair Neto para a disciplina de Microprocessadores.
